@@ -132,5 +132,4 @@ class ProductList extends HTMLElement {
 	}
 }
 
-// let the browser know about the custom element
 customElements.define('product-list', ProductList);
