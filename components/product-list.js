@@ -1,49 +1,10 @@
+import { createElement } from '../lib/dom';
+
 const API = 'https://fakestoreapi.com';
 
 const settings = {
 	currency: 'USD',
 };
-
-const styles = `
-	<style>
-		img {
-			max-width: 100%;
-			height: auto;
-			border: 0;
-		}	
-
-		.heading {
-			margin-top: 0;
-			font-family: sans-serif;
-			font-size: 2rem;
-		}
-
-		.list {
-			display: grid;
-			grid-template-columns: repeat(4, 1fr);
-			grid-gap: 3rem;
-		}
-
-		.product {
-			display: grid;
-			grid-template-rows: max-content auto;
-			grid-template-areas: "image" "content";
-		}
-
-		.product__image {
-			grid-area: image;
-		}
-
-		.product__content {
-			grid-area: content;
-			padding: 1rem;
-		}
-
-		.product__title {
-			font-size: 1.2rem;
-		}
-	</style>
-`;
 
 class ProductList extends HTMLElement {
 	constructor() {
@@ -85,7 +46,8 @@ class ProductList extends HTMLElement {
 			return;
 		}
 
-		this.render();
+		this.shadowRoot.innerHTML = '';
+		this.shadowRoot.appendChild(<Products {...this} />);
   }
 
 	async connectedCallback() {
@@ -106,30 +68,77 @@ class ProductList extends HTMLElement {
 
 		this.loading = false;
 	}
+}
 
-	render() {	
-		if (this.loading) {
-			this.shadowRoot.innerHTML = 'Loading...';
-		} else {
-			this.shadowRoot.innerHTML = `
-				${styles}
-				${this.title && `<h3 class="heading">${this.title}</h3>`}	
+/** @jsx createElement */
+
+const Products = ({ loading, title, products, currency }) => {
+	const style = document.createElement('style');
+
+	const styles = `
+		img {
+			max-width: 100%;
+			height: auto;
+			border: 0;
+		}	
+
+		.heading {
+			margin-top: 0;
+			font-family: sans-serif;
+			font-size: 2rem;
+		}
+
+		.list {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			grid-gap: 3rem;
+		}
+
+		.product {
+			display: grid;
+			grid-template-rows: max-content auto;
+			grid-template-areas: "image" "content";
+		}
+
+		.product__image {
+			grid-area: image;
+		}
+
+		.product__content {
+			grid-area: content;
+			padding: 1rem;
+		}
+
+		.product__title {
+			font-size: 1.2rem;
+		}
+	`;
+
+	style.innerHTML = styles;
+
+	if (loading) {
+		return <p>Loading...</p>
+	} else {
+		return (
+			<div>
+				{style}
+				<h3 class="heading">{title}</h3>
 				<div class="list">
-					${this.products.map((product) => {
-						return `
+					{products.map((product) => {
+						return (
 							<div class="product">
-								<img class="product__image" src="${product.image}" alt="${product.title}" />
+								<img class="product__image" src={product.image} alt={product.title} />
 								<div class="product__content">
-									<h3 class="product__title">${product.title}</h3>
-									<div class="product__price">${product.price} ${this.currency}</div>
+									<h3 class="product__title">{product.title}</h3>
+									<div class="product__price">{product.price} {currency}</div>
 								</div>
 							</div>
-						`;
-					}).join('')}
+						)
+					})}
 				</div>
-			`;
-		}
+			</div>
+		);
 	}
-}
+};
 
 customElements.define('product-list', ProductList);
