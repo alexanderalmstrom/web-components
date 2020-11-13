@@ -76,15 +76,18 @@ const Products = ({ loading, title, products, currency }) => {
 	const style = document.createElement('style');
 
 	const styles = `
+		:host {
+			font-family: sans-serif;
+		}
+
 		img {
 			max-width: 100%;
 			height: auto;
 			border: 0;
-		}	
+		}
 
 		.heading {
 			margin-top: 0;
-			font-family: sans-serif;
 			font-size: 2rem;
 		}
 
