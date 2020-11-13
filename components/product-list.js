@@ -1,6 +1,8 @@
 const API = 'https://fakestoreapi.com';
 
-const currency = 'USD';
+const settings = {
+	currency: 'USD',
+};
 
 const styles = `
 	<style>
@@ -55,7 +57,11 @@ class ProductList extends HTMLElement {
 	}
 
 	get title() {
-		return this.getAttribute('title') || '';
+		return this.getAttribute('title') || ''; 
+	}
+
+	get currency() {
+		return this.getAttribute('currency') || settings.currency;
 	}
 
 	get loading() {
@@ -101,13 +107,13 @@ class ProductList extends HTMLElement {
 		this.loading = false;
 	}
 
-	render() {
+	render() {	
 		if (this.loading) {
 			this.shadowRoot.innerHTML = 'Loading...';
 		} else {
 			this.shadowRoot.innerHTML = `
 				${styles}
-				<h3 class="heading">${this.title}</h3>
+				${this.title && `<h3 class="heading">${this.title}</h3>`}	
 				<div class="list">
 					${this.products.map((product) => {
 						return `
@@ -115,7 +121,7 @@ class ProductList extends HTMLElement {
 								<img class="product__image" src="${product.image}" alt="${product.title}" />
 								<div class="product__content">
 									<h3 class="product__title">${product.title}</h3>
-									<div class="product__price">${product.price} ${currency}</div>
+									<div class="product__price">${product.price} ${this.currency}</div>
 								</div>
 							</div>
 						`;
